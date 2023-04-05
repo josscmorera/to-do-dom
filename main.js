@@ -2,6 +2,10 @@ let form = document.querySelector('#todo-form');
 let input = document.querySelector('#todo-input');
 let list = document.querySelector('#todo-list');
 let clearButton = document.querySelector('#clear-button');
+let complete = document.querySelector('#complete');
+let clearCompleted = document.querySelector('#clear');
+
+
 let tasks = [];
 
 
@@ -100,5 +104,25 @@ function getStatusText(status) {
     }
 } 
 
+complete.addEventListener('click', () => {
+    let selectedItems = document.querySelectorAll('#todo-list li input[type="checkbox"]:checked');
+    selectedItems.forEach(selectedItem => {
+        let item = selectedItem.parentElement;
+        let taskId = Number(item.getAttribute('data-task-id'));
+        let taskIndex = tasks.findIndex(task => task.id === taskId);
+        tasks[taskIndex].status = 'completed';
+        let statusText = item.querySelector('.status-text');
+        statusText.innerText = getStatusText(tasks[taskIndex].status);
+    });
+    saveTasksToLocalStorage();
+});
 
-
+clearCompleted.addEventListener('click', () => {
+    let completedTasks = tasks.filter(task => task.status === 'completed');
+    completedTasks.forEach(completedTask => {
+        let item = document.querySelector(`[data-task-id="${completedTask.id}"]`);
+        tasks.splice(tasks.indexOf(completedTask), 1);
+        item.remove();
+    });
+    saveTasksToLocalStorage();
+});
